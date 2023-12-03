@@ -19,7 +19,6 @@ const port = 3000;
 const dev = !isProd;
 const nextApp = next({ dev, conf: nextConfig });
 const handle = nextApp.getRequestHandler();
-// const httpServer = http.createServer();
 
 function gracefulShutdown(signal: string, server: Server) {
   process.on(signal, async () => {

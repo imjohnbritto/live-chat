@@ -36,8 +36,7 @@ import CustomAlert from "./CustomAlert";
 import { Button as MuiButton, Divider } from "@mui/material";
 dayjs.extend(RelativeTime);
 
-const serverUrl =
-  "https://live-chat-zeta-bice.vercel.app" || "http://localhost:3000";
+const serverUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
 const ChatTypingArea = ({ sendChat }: { sendChat: (chat: string) => void }) => {
   const [currentChat, setCurrentChat] = useState<string>("");
