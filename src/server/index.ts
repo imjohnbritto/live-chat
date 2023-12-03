@@ -62,7 +62,8 @@ nextApp
 
     const io = new SocketServer(server, {
       cors: {
-        origin: process.env.NEXTAUTH_URL || "http://localhost:3000",
+        origin:
+          "https://live-chat-zeta-bice.vercel.app" || "http://localhost:3000",
         methods: ["GET", "POST"],
         allowedHeaders: ["my-custom-header"],
         credentials: true,

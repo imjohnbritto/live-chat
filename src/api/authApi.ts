@@ -6,7 +6,7 @@ import { OtherInfo } from "@server/types/info";
 
 export const loginUser = (phone: string, password: string) => {
   return axios<ServerResponse<AuthUser>>({
-    url: process.env.NEXTAUTH_URL + "/api/login",
+    url: "https://live-chat-zeta-bice.vercel.app" + "/api/login",
     method: "POST",
     data: {
       phone,
@@ -21,21 +21,21 @@ export const logoutUser = () => {
 
 export const getUsers = () => {
   return axios<ServerResponse<AuthUser[]>>({
-    url: process.env.NEXTAUTH_URL + "/api/users",
+    url: "https://live-chat-zeta-bice.vercel.app" + "/api/users",
     method: "GET",
   });
 };
 
 export const getOtherInfo = () => {
   return axios<ServerResponse<OtherInfo>>({
-    url: process.env.NEXTAUTH_URL + "/api/otherInfo",
+    url: "https://live-chat-zeta-bice.vercel.app" + "/api/otherInfo",
     method: "GET",
   });
 };
 
 export const setOtherInfo = (otherInfo: OtherInfo) => {
   return axios<ServerResponse<OtherInfo>>({
-    url: process.env.NEXTAUTH_URL + "/api/otherInfo",
+    url: "https://live-chat-zeta-bice.vercel.app" + "/api/otherInfo",
     method: "POST",
     data: otherInfo,
   });
@@ -43,7 +43,7 @@ export const setOtherInfo = (otherInfo: OtherInfo) => {
 
 export const registerUser = (user: UserRequestBody) => {
   return axios<ServerResponse<AuthUser>>({
-    url: process.env.NEXTAUTH_URL + "/api/register",
+    url: "https://live-chat-zeta-bice.vercel.app" + "/api/register",
     method: "POST",
     data: user,
   });
@@ -55,7 +55,7 @@ export const getChats = (payload: {
   isGroup: boolean;
 }) => {
   return axios<ServerResponse<ChatInfo[]>>({
-    url: process.env.NEXTAUTH_URL + "/api/chats",
+    url: "https://live-chat-zeta-bice.vercel.app" + "/api/chats",
     method: "POST",
     data: payload,
   });
