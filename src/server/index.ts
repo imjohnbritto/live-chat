@@ -15,7 +15,7 @@ import { Server as SocketServer } from "socket.io";
 import { saveChat } from "./services/chatServices";
 import cors from "cors";
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 const dev = !isProd;
 const nextApp = next({ dev, conf: nextConfig });
 const handle = nextApp.getRequestHandler();

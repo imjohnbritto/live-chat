@@ -20,7 +20,7 @@ const PageWrapper = styled(Box)(({ theme }) => ({
     padding: "24px 48px",
   },
   [theme.breakpoints.down("md")]: {
-    padding: "24px 16px",
+    padding: "8px 16px",
   },
 }));
 

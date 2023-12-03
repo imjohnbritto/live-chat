@@ -90,6 +90,8 @@ const ChatTypingArea = ({ sendChat }: { sendChat: (chat: string) => void }) => {
 const ChatView = ({ chatList }: { chatList: ChatInfo[] }) => {
   const userData = useLoggedInUser();
   const userChatViewRef = useRef<HTMLDivElement>(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
     (userChatViewRef.current as HTMLDivElement).scrollTo({
@@ -100,7 +102,7 @@ const ChatView = ({ chatList }: { chatList: ChatInfo[] }) => {
   return (
     <Box
       style={{
-        height: "70vh",
+        height: isMobile ? "65vh" : "70vh",
         overflowY: "auto",
       }}
       ref={userChatViewRef}
@@ -182,7 +184,7 @@ export const LiveChat = () => {
   const [infoId, setInfoId] = useState("");
 
   useEffect(() => {
-    const url = location.host;
+    const url = serverUrl;
     const newSocket = io(url);
     setSocket(newSocket);
 
@@ -230,7 +232,7 @@ export const LiveChat = () => {
           ) {
             setAlert(
               `New message from ${message.username}${
-                message.isGroup && " in group chat"
+                message.isGroup ? " in group chat" : ""
               }`
             );
           }
@@ -378,7 +380,7 @@ export const LiveChat = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={modalStyle}>
+        <Box sx={modalStyle(isMobile)}>
           <Typography>
             Current Target Amount is: {!userData?.isAdmin && <b>{target}</b>}
           </Typography>
@@ -442,7 +444,7 @@ export const LiveChat = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={modalStyle}>
+        <Box sx={modalStyle(isMobile)}>
           <Typography>
             <b>Note:</b> {!userData?.isAdmin && <p>{note}</p>}
           </Typography>
@@ -457,7 +459,7 @@ export const LiveChat = () => {
                 fontSize: "12px",
                 marginRight: "5px",
                 height: "50px",
-                width: "350px",
+                width: isMobile ? "300px" : "350px",
               }}
             />
           )}

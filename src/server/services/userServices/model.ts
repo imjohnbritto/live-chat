@@ -1,50 +1,50 @@
-import mongoose, { DefaultSchemaOptions } from 'mongoose';
-import { DBUser } from '../../types/user';
-import * as yup from 'yup';
+import mongoose, { DefaultSchemaOptions } from "mongoose";
+import { DBUser } from "../../types/user";
+import * as yup from "yup";
 
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema<DBUser>(
-    {
-        username: {
-          type: String,
-          required: true
-        },
-        password: {
-            type: String,
-            required: true
-        },
-        phone: {
-          type: String,
-          required: true,
-          unique: true,
-          trim: true,
-          index: true
-        },
-        isAdmin: {
-          type: Boolean,
-          required: false,
-        }
+  {
+    username: {
+      type: String,
+      required: true,
     },
-    { timestamps: true }
+    password: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      index: true,
+    },
+    isAdmin: {
+      type: Boolean,
+      required: false,
+    },
+  },
+  { timestamps: true }
 );
 
 const validationSchema = yup.object({
-    username: yup.string().trim().required('Name is required'),
-    password: yup.string().trim().required('Password is required'),
-    phone: yup.string().trim().required('Mobile number is required'),
-    isAdmin: yup.string().nullable().trim(),
+  username: yup.string().trim().required("Name is required"),
+  password: yup.string().trim().required("Password is required"),
+  phone: yup.string().trim().required("Mobile number is required"),
+  isAdmin: yup.string().nullable().trim(),
 });
 
 export const validateUserObject = (obj: any) => {
-    let val, error;
-    try {
-      val = validationSchema.validateSync(obj, { stripUnknown: true });
-    } catch (err: any) {
-      error = err.errors;
-    }
-    return { val, error };
-  };
+  let val, error;
+  try {
+    val = validationSchema.validateSync(obj, { stripUnknown: true });
+  } catch (err: any) {
+    error = err.errors;
+  }
+  return { val, error };
+};
 
 type UserModelType = mongoose.Model<
   DBUser,
@@ -64,5 +64,5 @@ type UserModelType = mongoose.Model<
 >;
 
 export const User: UserModelType =
-  mongoose.models.User || mongoose.model('User', userSchema, 'users');
+  mongoose.models.User || mongoose.model("User", userSchema, "users");
 User.createIndexes();
