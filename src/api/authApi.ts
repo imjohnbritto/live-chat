@@ -6,7 +6,7 @@ import { OtherInfo } from "@server/types/info";
 
 export const loginUser = (phone: string, password: string) => {
   return axios<ServerResponse<AuthUser>>({
-    url: "/api/login",
+    url: process.env.NEXTAUTH_URL + "/api/login",
     method: "POST",
     data: {
       phone,
@@ -21,21 +21,21 @@ export const logoutUser = () => {
 
 export const getUsers = () => {
   return axios<ServerResponse<AuthUser[]>>({
-    url: "/api/users",
+    url: process.env.NEXTAUTH_URL + "/api/users",
     method: "GET",
   });
 };
 
 export const getOtherInfo = () => {
   return axios<ServerResponse<OtherInfo>>({
-    url: "/api/otherInfo",
+    url: process.env.NEXTAUTH_URL + "/api/otherInfo",
     method: "GET",
   });
 };
 
 export const setOtherInfo = (otherInfo: OtherInfo) => {
   return axios<ServerResponse<OtherInfo>>({
-    url: "/api/otherInfo",
+    url: process.env.NEXTAUTH_URL + "/api/otherInfo",
     method: "POST",
     data: otherInfo,
   });
@@ -43,7 +43,7 @@ export const setOtherInfo = (otherInfo: OtherInfo) => {
 
 export const registerUser = (user: UserRequestBody) => {
   return axios<ServerResponse<AuthUser>>({
-    url: "/api/register",
+    url: process.env.NEXTAUTH_URL + "/api/register",
     method: "POST",
     data: user,
   });
@@ -55,7 +55,7 @@ export const getChats = (payload: {
   isGroup: boolean;
 }) => {
   return axios<ServerResponse<ChatInfo[]>>({
-    url: "/api/chats",
+    url: process.env.NEXTAUTH_URL + "/api/chats",
     method: "POST",
     data: payload,
   });

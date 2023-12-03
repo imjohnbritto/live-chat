@@ -51,5 +51,6 @@
     "eslint-config-next": "14.0.3",
     "nodemon": "^2.0.20",
     "typescript": "^5"
-  }
+  },
+  "proxy":"https://live-chat-zeta-bice.vercel.app"
 }
