@@ -183,7 +183,8 @@ export const LiveChat = () => {
   const [infoId, setInfoId] = useState("");
 
   useEffect(() => {
-    const newSocket = io(serverUrl);
+    const url = location.host;
+    const newSocket = io(url);
     setSocket(newSocket);
 
     return () => {
