@@ -13,6 +13,7 @@ import {
 import session from "express-session";
 import { Server as SocketServer } from "socket.io";
 import { saveChat } from "./services/chatServices";
+import cors from "cors";
 
 const port = 3000;
 const dev = !isProd;
@@ -38,7 +39,7 @@ nextApp
     // Add common middlewares
     expressApp.use(express.json());
     expressApp.use(express.urlencoded({ extended: true }));
-    // expressApp.use(authMiddleware());
+    expressApp.use(cors());
 
     // Setup session
     expressApp.use(session(getSessionOptions()));
