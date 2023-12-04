@@ -24,7 +24,7 @@ export const getChat = async (payload: {
     }).sort({ createdAt: 1 });
   } else {
     return await Chat.find({
-      participants: { $in: [payload.loggedInUser, payload.selectedUser] },
+      participants: { $all: [payload.loggedInUser, payload.selectedUser] },
     }).sort({ createdAt: 1 });
   }
 };
