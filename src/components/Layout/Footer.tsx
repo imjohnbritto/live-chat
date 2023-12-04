@@ -24,7 +24,7 @@ const Footer = () => {
   return (
     <FooterWrapper bgColor={COLORS.LIGHT_GREY}>
       <Typography size={12} color={"TEXT3"} weight={"400"}>
-        Teams Chat © {currentYear}, All right reserved
+        TSPL © {currentYear}, All right reserved
       </Typography>
     </FooterWrapper>
   );

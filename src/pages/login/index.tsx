@@ -175,7 +175,7 @@ const Login = () => {
           <Divider gutter={[36, 0, 0, 0]} alignItems="center" />
           <Grid gutter={[36, 0, 0, 0]}>
             <Typography size={16} lineHeight={22} color={"TEXT1"}>
-              If you do not have an Teams Chat account
+              If you do not have an TSPL Chat account
             </Typography>
           </Grid>
           <Grid gutter={[20, 0, 0, 0]} direction="column" alignItems="center">

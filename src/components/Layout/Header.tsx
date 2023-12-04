@@ -141,12 +141,12 @@ const Header = () => {
             display={"flex"}
           >
             <Image
-              alt="Teams Chat Logo"
+              alt="TSPL Logo"
               src={Logo}
               height={logoSize}
               width={logoSize}
             />
-            <Typography>TEAMS CHAT</Typography>
+            <Typography>TSPL</Typography>
           </Box>
         </Link>
         {renderUserMenu()}

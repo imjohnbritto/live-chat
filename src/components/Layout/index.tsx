@@ -25,7 +25,7 @@ const Layout: FC<Props> = ({ children }) => {
   return (
     <>
       <Head>
-        <title>Teams Chat</title>
+        <title>TSPL</title>
         <link rel="icon" href={"/logo/favicon.ico"} sizes="any" />
       </Head>
       <Wrapper>

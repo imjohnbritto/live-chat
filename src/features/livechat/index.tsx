@@ -287,7 +287,7 @@ export const LiveChat = () => {
         justifyContent={"space-between"}
       >
         <Box paddingLeft={"30px"}>
-          <Typography color={COLORS.WHITE}>Teams Chat</Typography>
+          <Typography color={COLORS.WHITE}>TSPL</Typography>
         </Box>
         <Box paddingRight={"30px"}>
           <Button
@@ -298,7 +298,7 @@ export const LiveChat = () => {
             }}
           >
             <Typography>
-              {userData?.isAdmin ? "Set Target" : "View Target"}
+              {userData?.isAdmin ? "Set Amount" : "View Amount"}
             </Typography>
           </Button>
         </Box>
@@ -310,7 +310,7 @@ export const LiveChat = () => {
           ismobile={isMobile}
         >
           <Box style={{ backgroundColor: "burlywood" }} paddingLeft={"10px"}>
-            <Typography fontSize={"14pt"}>Direct Messages</Typography>
+            <Typography fontSize={"14pt"}>Request Message</Typography>
           </Box>
           <ul
             style={{
@@ -334,7 +334,7 @@ export const LiveChat = () => {
                 );
               }
             })}
-            <UsersLi
+            {/* <UsersLi
               active={selectedUser === "group_message"}
               onClick={() => setSelectedUser("group_message")}
             >
@@ -344,21 +344,27 @@ export const LiveChat = () => {
                   Group Chat
                 </Typography>
               </Box>
-            </UsersLi>
+            </UsersLi> */}
           </ul>
           <Box display={"flex"} justifyContent={"center"}>
-            <Button
-              type="secondary"
-              style={{ height: "30px" }}
-              onClick={() => {
-                setShowNote(true);
-                getOtherInfo();
-              }}
-            >
-              <Typography>
-                {userData?.isAdmin ? "Set Note" : "View Note"}
-              </Typography>
-            </Button>
+            {userData?.isAdmin ? (
+              <Button
+                type="secondary"
+                style={{ height: "30px" }}
+                onClick={() => {
+                  setShowNote(true);
+                  getOtherInfo();
+                }}
+              >
+                <Typography>
+                  {userData?.isAdmin ? "Set Note" : "View Note"}
+                </Typography>
+              </Button>
+            ) : (
+              <Box>
+                <Typography>{note}</Typography>
+              </Box>
+            )}
           </Box>
         </LeftSidePanel>
         <Box
