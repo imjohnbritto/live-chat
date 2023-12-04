@@ -21,9 +21,9 @@ import {
 import { COLORS } from "@utils/theme";
 import { useEffect, useRef, useState } from "react";
 import { TextBox } from "@components/Common";
-import { MdSend, MdGroup } from "react-icons/md";
+import { MdSend, MdGroup, MdCancel, MdAdd } from "react-icons/md";
 import { ChatInfo } from "@server/types/chat";
-import { getInitials } from "@utils/helper";
+import { clearUserData, getInitials } from "@utils/helper";
 import useLoggedInUser from "@utils/useLoggedInUser";
 import dayjs from "dayjs";
 import RelativeTime from "dayjs/plugin/relativeTime";
@@ -34,12 +34,22 @@ import { AuthUser } from "@server/types/user";
 import io, { Socket } from "socket.io-client";
 import CustomAlert from "./CustomAlert";
 import { Button as MuiButton, Divider } from "@mui/material";
+import Router from "next/router";
 dayjs.extend(RelativeTime);
 
 const ChatTypingArea = ({ sendChat }: { sendChat: (chat: string) => void }) => {
   const [currentChat, setCurrentChat] = useState<string>("");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   return (
-    <Box>
+    <Box
+      style={{
+        position: isMobile ? "absolute" : "initial",
+        bottom: "0px",
+        left: "13px",
+        width: "92%",
+      }}
+    >
       <TextBoxWrapper alignItems="center">
         <TextBox
           id="chat-area"
@@ -50,7 +60,7 @@ const ChatTypingArea = ({ sendChat }: { sendChat: (chat: string) => void }) => {
           style={{
             borderColor: "grey",
             width: "100%",
-            fontSize: "24px",
+            fontSize: isMobile ? "18px" : "24px",
             marginRight: "5px",
           }}
           onKeyDown={({ code }) => {
@@ -100,7 +110,7 @@ const ChatView = ({ chatList }: { chatList: ChatInfo[] }) => {
   return (
     <Box
       style={{
-        height: isMobile ? "65vh" : "70vh",
+        height: isMobile ? "initial" : "70vh",
         overflowY: "auto",
       }}
       ref={userChatViewRef}
@@ -116,19 +126,31 @@ const ChatView = ({ chatList }: { chatList: ChatInfo[] }) => {
               display={"flex"}
               alignItems={"end"}
               key={index}
-              paddingRight={"18px"}
+              paddingRight={isMobile ? "4px" : "18px"}
               paddingBottom={"18px"}
               flexDirection={"column"}
             >
               <Box display={"flex"} justifyContent={"end"}>
-                <MeBubble color={COLORS.BLACK} style={{ padding: "10px" }}>
+                <MeBubble
+                  ismobile={isMobile}
+                  color={COLORS.BLACK}
+                  style={{ padding: isMobile ? "0px 8px" : "10px" }}
+                >
                   {chat.message}
                 </MeBubble>
-                <Avatar alt={userData?.username}>
-                  {userData && getInitials(userData.username as string)}
+                <Avatar
+                  alt={userData?.username}
+                  style={{
+                    width: isMobile ? "24px" : "40px",
+                    height: isMobile ? "24px" : "40px",
+                  }}
+                >
+                  <Typography fontSize={isMobile ? "10px" : "16px"}>
+                    {userData && getInitials(userData.username as string)}
+                  </Typography>
                 </Avatar>
               </Box>
-              <Box display={"flex"} paddingRight={"58px"}>
+              <Box display={"flex"} paddingRight={isMobile ? "26px" : "58px"}>
                 <Typography fontSize={12} color={COLORS.GREY}>
                   {dayjs(chat.timestamp).fromNow(true)}
                 </Typography>
@@ -140,19 +162,31 @@ const ChatView = ({ chatList }: { chatList: ChatInfo[] }) => {
             <Box
               display={"flex"}
               key={index}
-              paddingLeft={"18px"}
+              paddingLeft={isMobile ? "4px" : "18px"}
               paddingBottom={"18px"}
               flexDirection={"column"}
             >
               <Box display={"flex"}>
-                <Avatar alt={chat.username}>
-                  {userData && getInitials(chat.username as string)}
+                <Avatar
+                  alt={chat.username}
+                  style={{
+                    width: isMobile ? "24px" : "40px",
+                    height: isMobile ? "24px" : "40px",
+                  }}
+                >
+                  <Typography fontSize={isMobile ? "10px" : "16px"}>
+                    {userData && getInitials(chat.username as string)}
+                  </Typography>
                 </Avatar>
-                <OthersBubble color={COLORS.WHITE} style={{ padding: "10px" }}>
+                <OthersBubble
+                  ismobile={isMobile}
+                  color={COLORS.WHITE}
+                  style={{ padding: isMobile ? "0px 8px" : "10px" }}
+                >
                   {chat.message}
                 </OthersBubble>
               </Box>
-              <Box display={"flex"} paddingLeft={"58px"}>
+              <Box display={"flex"} paddingLeft={isMobile ? "26px" : "58px"}>
                 <Typography color={COLORS.GREY} fontSize={12}>
                   {dayjs(chat.timestamp).fromNow(true)}
                 </Typography>
@@ -180,6 +214,7 @@ export const LiveChat = () => {
   const [unreadMsgs, setUnreadMsgs] = useState({});
   const [alert, setAlert] = useState("");
   const [infoId, setInfoId] = useState("");
+  const [deactivePhone, setDeactivatePhone] = useState("");
 
   useEffect(() => {
     const serverUrl = location.host || "http://localhost:3000";
@@ -248,72 +283,121 @@ export const LiveChat = () => {
     setChatList(chats.data as ChatInfo[]);
   };
   useEffect(() => {
-    getChatsList({
-      selectedUser,
-      loggedInUser: userData?.phone as string,
-      isGroup: selectedUser === "group_message",
-    });
+    if (selectedUser !== "group_message") {
+      getChatsList({
+        selectedUser,
+        loggedInUser: userData?.phone as string,
+        isGroup: selectedUser === "group_message",
+      });
+      getOtherInfo(
+        userData?.isAdmin ? selectedUser : (userData?.phone as string)
+      );
+    }
   }, [selectedUser]);
 
   const saveOtherInfo = () => {
-    authApi.setOtherInfo({ note, target, _id: infoId });
+    authApi.setOtherInfo({
+      note,
+      target,
+      _id: infoId,
+      phone: selectedUser as string,
+    });
     setShowTarget(false);
     setShowNote(false);
+    getOtherInfo(
+      userData?.isAdmin ? selectedUser : (userData?.phone as string)
+    );
   };
 
   const getUsersList = async () => {
     const list = await authApi.getUsers();
+
+    const updatedLoggedInUser: AuthUser = list.data.find(
+      (user) => user.phone === userData?.phone
+    ) as AuthUser;
+    if (!updatedLoggedInUser.isActive) {
+      clearUserData();
+      setTimeout(() => {
+        Router.replace("/login");
+      }, 300);
+    }
+
     setUsers(list.data as unknown as AuthUser[]);
-    setSelectedUser(list.data[list.data.length - 1].phone);
+    const filteredList = userData?.isAdmin
+      ? list.data.filter((user) => !user.isAdmin)
+      : list.data.filter((user) => user.isAdmin);
+
+    const selectedUserPhone = filteredList[filteredList.length - 1].phone;
+    setSelectedUser(selectedUserPhone);
   };
   useEffect(() => {
     getUsersList();
   }, []);
 
-  const getOtherInfo = async () => {
-    const info = await authApi.getOtherInfo();
+  const getOtherInfo = async (selectedUserPhone: string) => {
+    const info = await authApi.getOtherInfo(selectedUserPhone as string);
     setInfoId(info.data._id as string);
     setNote(info.data.note);
     setTarget(info.data.target);
   };
-  useEffect(() => {
-    getOtherInfo();
-  }, []);
+
+  const setDeactivateModal = (phone: string) => {
+    setDeactivatePhone(phone);
+  };
+
+  let userAction: AuthUser | {} = {};
+  if (deactivePhone !== "") {
+    userAction = users.find((user) => user.phone === deactivePhone) || {};
+  }
+
+  const userStateChange = async (state: boolean, phone: string) => {
+    setDeactivatePhone("");
+    await authApi.userAction({ phone, isActive: state });
+    getUsersList();
+  };
 
   return (
     <ChatContainer display={"flex"} flexDirection={"column"}>
       <Header
+        ismobile={isMobile}
         display={"flex"}
         alignItems={"center"}
         justifyContent={"space-between"}
       >
         <Box paddingLeft={"30px"}>
-          <Typography color={COLORS.WHITE}>
+          <Typography
+            color={COLORS.WHITE}
+            fontSize={isMobile ? "12px" : "16px"}
+          >
             TSPL - {users.find((user) => user.phone === selectedUser)?.username}
           </Typography>
         </Box>
         <Box paddingRight={"30px"}>
           <Button
-            style={{ height: "30px" }}
+            style={{ height: isMobile ? "20px" : "30px" }}
             onClick={() => {
               setShowTarget(true);
-              getOtherInfo();
+              getOtherInfo(
+                userData?.isAdmin ? selectedUser : (userData?.phone as string)
+              );
             }}
           >
-            <Typography>
+            <Typography fontSize={isMobile ? "12px" : "16px"}>
               {userData?.isAdmin ? "Set Amount" : "View Amount"}
             </Typography>
           </Button>
         </Box>
       </Header>
-      <Box display={"flex"} paddingTop={"5px"}>
+      <Box display={"flex"} paddingTop={"2px"} height={"77%"}>
         <LeftSidePanel
           display={"flex"}
           flexDirection={"column"}
           ismobile={isMobile}
         >
           <Box style={{ backgroundColor: "burlywood" }} paddingLeft={"10px"}>
-            <Typography fontSize={"14pt"}>Request Message</Typography>
+            <Typography fontSize={isMobile ? "11px" : "14pt"}>
+              Request Message
+            </Typography>
           </Box>
           <ul
             style={{
@@ -324,17 +408,95 @@ export const LiveChat = () => {
           >
             {users.map((user, i) => {
               if (user.phone !== userData?.phone) {
-                return (
-                  <UsersLi
-                    active={user.phone === selectedUser}
-                    onClick={() => setSelectedUser(user.phone)}
-                    key={i}
-                  >
-                    <Box>
-                      <Typography>{user.username}</Typography>
-                    </Box>
-                  </UsersLi>
-                );
+                if (userData?.isAdmin) {
+                  return (
+                    <UsersLi
+                      active={user.phone === selectedUser}
+                      key={i}
+                      ismobile={isMobile}
+                      userActive={user.isActive}
+                    >
+                      <Box display={"flex"} justifyContent={"space-between"}>
+                        <Box
+                          onClick={() => setSelectedUser(user.phone)}
+                          width={"100%"}
+                        >
+                          <Typography fontSize={isMobile ? "14px" : "16px"}>
+                            {user.username}
+                          </Typography>
+                        </Box>
+                        {userData.isAdmin && (
+                          <Box
+                            alignItems={"center"}
+                            style={{ zIndex: 999 }}
+                            onClick={() => setDeactivateModal(user.phone)}
+                          >
+                            {user.isActive ? (
+                              <MdCancel
+                                style={{
+                                  paddingRight: "2px",
+                                  paddingTop: "2px",
+                                }}
+                              />
+                            ) : (
+                              <MdAdd
+                                style={{
+                                  paddingRight: "2px",
+                                  paddingTop: "2px",
+                                }}
+                              />
+                            )}
+                          </Box>
+                        )}
+                      </Box>
+                    </UsersLi>
+                  );
+                } else {
+                  if (user.isAdmin) {
+                    return (
+                      <UsersLi
+                        active={user.phone === selectedUser}
+                        key={i}
+                        ismobile={isMobile}
+                        userActive={user.isActive}
+                      >
+                        <Box display={"flex"} justifyContent={"space-between"}>
+                          <Box
+                            onClick={() => setSelectedUser(user.phone)}
+                            width={"100%"}
+                          >
+                            <Typography fontSize={isMobile ? "14px" : "16px"}>
+                              {user.username}
+                            </Typography>
+                          </Box>
+                          {userData?.isAdmin && (
+                            <Box
+                              alignItems={"center"}
+                              style={{ zIndex: 999 }}
+                              onClick={() => setDeactivateModal(user.phone)}
+                            >
+                              {user.isActive ? (
+                                <MdCancel
+                                  style={{
+                                    paddingRight: "2px",
+                                    paddingTop: "2px",
+                                  }}
+                                />
+                              ) : (
+                                <MdAdd
+                                  style={{
+                                    paddingRight: "2px",
+                                    paddingTop: "2px",
+                                  }}
+                                />
+                              )}
+                            </Box>
+                          )}
+                        </Box>
+                      </UsersLi>
+                    );
+                  }
+                }
               }
             })}
             {/* <UsersLi
@@ -356,10 +518,14 @@ export const LiveChat = () => {
                 style={{ height: "30px" }}
                 onClick={() => {
                   setShowNote(true);
-                  getOtherInfo();
+                  getOtherInfo(
+                    userData?.isAdmin
+                      ? selectedUser
+                      : (userData?.phone as string)
+                  );
                 }}
               >
-                <Typography>
+                <Typography fontSize={isMobile ? "14px" : "16px"}>
                   {userData?.isAdmin ? "Set Note" : "View Note"}
                 </Typography>
               </Button>
@@ -389,7 +555,8 @@ export const LiveChat = () => {
       >
         <Box sx={modalStyle(isMobile)}>
           <Typography>
-            Current Target Amount is: {!userData?.isAdmin && <b>{target}</b>}
+            You current target amount is:{" "}
+            {!userData?.isAdmin && <b>{target}</b>}
           </Typography>
           {userData?.isAdmin && (
             <TextBox
@@ -486,6 +653,46 @@ export const LiveChat = () => {
                 onClick={() => saveOtherInfo()}
               >
                 <Typography>Save</Typography>
+              </Button>
+            )}
+          </Box>
+        </Box>
+      </Modal>
+
+      <Modal
+        open={deactivePhone !== ""}
+        onClose={() => setDeactivatePhone("")}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={modalStyle(isMobile)}>
+          <Typography>
+            Are you sure want to
+            {(userAction as AuthUser)?.isActive
+              ? ` deactivate - ${(userAction as AuthUser).username}?`
+              : ` activate - ${(userAction as AuthUser).username}?`}
+          </Typography>
+          <Box paddingTop={"10px"} display={"flex"} justifyContent={"end"}>
+            <Box paddingRight={"5px"}>
+              <Button
+                type="secondary"
+                style={{ height: "30px" }}
+                onClick={() => setDeactivatePhone("")}
+              >
+                <Typography>No</Typography>
+              </Button>
+            </Box>
+            {userData?.isAdmin && (
+              <Button
+                style={{ height: "30px" }}
+                onClick={() =>
+                  userStateChange(
+                    !(userAction as AuthUser)?.isActive,
+                    deactivePhone
+                  )
+                }
+              >
+                <Typography>Yes</Typography>
               </Button>
             )}
           </Box>

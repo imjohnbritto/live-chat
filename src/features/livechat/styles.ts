@@ -10,16 +10,16 @@ export const ChatContainer = styled(Box)`
   background-color: ${COLORS.LIGHT_GREEN};
 `;
 
-export const Header = styled(Box)`
+export const Header = styled(Box)<{ ismobile: boolean }>`
   width: 100%;
-  height: 50px;
+  height: ${({ ismobile }) => (ismobile ? "30px" : "50px")};
   border-radius: 15px 15px 0 0;
   background-color: ${COLORS.SUCCESS};
 `;
 
 export const LeftSidePanel = styled(Box)<{ ismobile: boolean }>`
   width: ${({ ismobile }) => (ismobile ? "40%" : "20%")};
-  height: 100%;
+  height: ${({ ismobile }) => (ismobile ? "initial" : "100%")};
   border-radius: 0 0 0 15px;
   background-color: ${COLORS.LIGHT_YELLOW};
 `;
@@ -33,18 +33,18 @@ export const TextBoxWrapper = styled(Grid)`
   }
 `;
 
-export const MeBubble = styled(Typography)`
+export const MeBubble = styled(Typography)<{ ismobile: boolean }>`
   background-color: #d6d374;
   border-radius: 8px;
-  margin-right: 14px;
-  max-width: 600px;
+  margin-right: ${({ ismobile }) => (ismobile ? "3px" : "14px")};
+  max-width: ${({ ismobile }) => (ismobile ? "170px" : "600px")};
 `;
 
-export const OthersBubble = styled(Typography)`
+export const OthersBubble = styled(Typography)<{ ismobile: boolean }>`
   background-color: #192118;
   border-radius: 8px;
-  margin-left: 14px;
-  max-width: 600px;
+  margin-left: ${({ ismobile }) => (ismobile ? "3px" : "14px")};
+  max-width: ${({ ismobile }) => (ismobile ? "170px" : "600px")};
 `;
 
 export const modalStyle = (isMobile: boolean) => ({
@@ -60,15 +60,27 @@ export const modalStyle = (isMobile: boolean) => ({
   p: 4,
 });
 
-export const UsersLi = styled("li")<{ active: boolean }>`
-  padding-left: 10px;
-  background-color: ${({ active }) => (active ? COLORS.SUCCESS : "gainsboro")};
+export const UsersLi = styled("li")<{
+  active: boolean;
+  ismobile: boolean;
+  userActive: boolean;
+}>`
+  padding-left: ${({ active }) => (active ? "5px" : "10px")};
+  background-color: ${({ active, userActive }) =>
+    active
+      ? userActive
+        ? COLORS.SUCCESS
+        : COLORS.DARK_RED
+      : userActive
+      ? "gainsboro"
+      : COLORS.DARK_RED};
   border-radius: 6px;
   margin-bottom: 3px;
   cursor: pointer;
   color: ${({ active }) => (active ? "white" : "black")};
   :hover {
-    background-color: ${COLORS.SUCCESS};
+    background-color: ${({ userActive }) =>
+      userActive ? COLORS.SUCCESS : COLORS.DARK_RED};
     color: white;
   }
 `;

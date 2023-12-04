@@ -38,7 +38,7 @@ const HeaderWrapper = styled("div")(({ theme }) => ({
     padding: "8px 60px",
   },
   [theme.breakpoints.down("md")]: {
-    padding: "8px 16px",
+    padding: "0px 16px",
   },
 }));
 
@@ -48,7 +48,7 @@ const Header = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const logoSize = 60;
+  const logoSize = isMobile ? 30 : 60;
 
   const open = Boolean(anchorEl);
 
@@ -85,7 +85,13 @@ const Header = () => {
         <Box display="flex" alignItems="center">
           {userData && (
             <Box display={"flex"} alignItems="center" columnGap={"8px"}>
-              <Avatar alt={userData.username}>
+              <Avatar
+                alt={userData.username}
+                style={{
+                  width: isMobile ? "30px" : "40px",
+                  height: isMobile ? "30px" : "40px",
+                }}
+              >
                 {getInitials(userData.username)}
               </Avatar>
               <Typography size={16} lineHeight={18} color="TEXT1">

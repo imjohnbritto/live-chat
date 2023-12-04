@@ -26,18 +26,27 @@ export const getUsers = () => {
   });
 };
 
-export const getOtherInfo = () => {
+export const getOtherInfo = (phone: string) => {
   return axios<ServerResponse<OtherInfo>>({
     url: "/api/otherInfo",
-    method: "GET",
+    method: "POST",
+    data: { phone },
   });
 };
 
 export const setOtherInfo = (otherInfo: OtherInfo) => {
   return axios<ServerResponse<OtherInfo>>({
-    url: "/api/otherInfo",
+    url: "/api/otherInfo/save",
     method: "POST",
     data: otherInfo,
+  });
+};
+
+export const userAction = (payload: { phone: string; isActive: boolean }) => {
+  return axios<ServerResponse<OtherInfo>>({
+    url: "/api/users/action",
+    method: "POST",
+    data: payload,
   });
 };
 

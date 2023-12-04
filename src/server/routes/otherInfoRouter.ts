@@ -4,7 +4,7 @@ import { getErrorResponse, getSuccessResponse, logger } from "../utils";
 
 const router = Router();
 
-router.post("/", async (req: Request, res: Response) => {
+router.post("/save", async (req: Request, res: Response) => {
   try {
     const info = await otherInfoServices.saveInfo(req.body);
     if (info) {
@@ -17,12 +17,12 @@ router.post("/", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/", async (req: Request, res: Response) => {
-  const info = await otherInfoServices.getInfo();
+router.post("/", async (req: Request, res: Response) => {
+  const info = await otherInfoServices.getInfo(req.body);
   if (info) {
     return res.status(200).json(getSuccessResponse(200, "Info Data", info));
   } else {
-    res.status(401).json(getErrorResponse(401, "Info Not Found"));
+    return res.status(200).json(getSuccessResponse(200, "No Data", {}));
   }
 });
 

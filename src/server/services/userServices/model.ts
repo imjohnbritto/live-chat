@@ -25,6 +25,10 @@ const userSchema = new Schema<DBUser>(
       type: Boolean,
       required: false,
     },
+    isActive: {
+      type: Boolean,
+      required: false,
+    },
   },
   { timestamps: true }
 );
@@ -34,6 +38,7 @@ const validationSchema = yup.object({
   password: yup.string().trim().required("Password is required"),
   phone: yup.string().trim().required("Mobile number is required"),
   isAdmin: yup.string().nullable().trim(),
+  isActive: yup.boolean(),
 });
 
 export const validateUserObject = (obj: any) => {

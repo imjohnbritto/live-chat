@@ -4,6 +4,7 @@ export type OtherInfo = {
   note: string;
   target: string;
   _id?: string;
+  phone: string;
 };
 
 export type DBOtherInfo = {

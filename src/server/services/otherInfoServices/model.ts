@@ -12,6 +12,9 @@ const userSchema = new Schema<DBOtherInfo>(
     target: {
       type: String,
     },
+    phone: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
@@ -19,6 +22,7 @@ const userSchema = new Schema<DBOtherInfo>(
 const validationSchema = yup.object({
   note: yup.string().nullable().trim(),
   target: yup.string().nullable().trim(),
+  phone: yup.string().nullable().trim(),
 });
 
 export const validateOtherInfoObject = (obj: any) => {

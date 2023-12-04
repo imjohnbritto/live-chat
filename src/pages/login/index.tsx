@@ -85,12 +85,10 @@ const Login = () => {
     setError({});
     setLoading(true);
     try {
-      console.log(mobile, password);
       const value = await loginSchema.validate(
         { phone: mobile, password },
         { stripUnknown: true }
       );
-      console.log(mobile, password, value);
       const res = await authApi.loginUser(value.phone, value.password);
       setUserData(res.data);
       setTimeout(() => {
@@ -103,7 +101,7 @@ const Login = () => {
       if (error.status) {
         type = "page";
         if (error.status === 401) {
-          message = "Invalid mobile number or password";
+          message = "Mobile number or password is incorrect";
         } else {
           message = "We are facing some unexpected issue.";
         }

@@ -57,6 +57,7 @@ const CreateAccount = () => {
     phone: "",
     password: "",
     isAdmin: false,
+    isActive: true,
   });
   const [showPass, setShowPass] = useState(false);
 

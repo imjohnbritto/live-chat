@@ -3,7 +3,7 @@ import { OtherInfo, validateOtherInfoObject } from "./model";
 
 export const saveInfo = async (payload: OtherInfoRequestBody) => {
   const { val, error } = validateOtherInfoObject(payload);
-  const existing = await OtherInfo.find({});
+  const existing = await OtherInfo.find({ phone: payload.phone });
   if (error) {
     throw { validation: error };
   }
@@ -18,6 +18,6 @@ export const saveInfo = async (payload: OtherInfoRequestBody) => {
   }
 };
 
-export const getInfo = async () => {
-  return await OtherInfo.findOne({}).lean();
+export const getInfo = async (payload: { phone: string }) => {
+  return await OtherInfo.findOne({ phone: payload.phone }).lean();
 };
