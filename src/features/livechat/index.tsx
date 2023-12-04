@@ -264,6 +264,7 @@ export const LiveChat = () => {
   const getUsersList = async () => {
     const list = await authApi.getUsers();
     setUsers(list.data as unknown as AuthUser[]);
+    setSelectedUser(list.data[list.data.length - 1].phone);
   };
   useEffect(() => {
     getUsersList();
@@ -287,7 +288,9 @@ export const LiveChat = () => {
         justifyContent={"space-between"}
       >
         <Box paddingLeft={"30px"}>
-          <Typography color={COLORS.WHITE}>TSPL</Typography>
+          <Typography color={COLORS.WHITE}>
+            TSPL - {users.find((user) => user.phone === selectedUser)?.username}
+          </Typography>
         </Box>
         <Box paddingRight={"30px"}>
           <Button
