@@ -191,6 +191,7 @@ const Login = () => {
           autoHideDuration={6000}
           onClose={() => setError((prev) => ({ ...prev, page: undefined }))}
           anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          style={{ width: "80%" }}
         >
           <CustomAlert
             severity="error"
