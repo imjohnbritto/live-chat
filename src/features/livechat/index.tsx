@@ -182,9 +182,8 @@ export const LiveChat = () => {
   const [infoId, setInfoId] = useState("");
 
   useEffect(() => {
-    const serverUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-    const url = serverUrl;
-    const newSocket = io(url);
+    const serverUrl = location.host || "http://localhost:3000";
+    const newSocket = io(serverUrl);
     setSocket(newSocket);
 
     return () => {
