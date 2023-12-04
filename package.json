@@ -52,5 +52,5 @@
     "nodemon": "^2.0.20",
     "typescript": "^5"
   },
-  "proxy":"https://live-chat-zeta-bice.vercel.app"
+  "proxy":"https://live-chat-production-99c6.up.railway.app/"
 }

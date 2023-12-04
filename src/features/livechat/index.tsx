@@ -36,8 +36,6 @@ import CustomAlert from "./CustomAlert";
 import { Button as MuiButton, Divider } from "@mui/material";
 dayjs.extend(RelativeTime);
 
-const serverUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-
 const ChatTypingArea = ({ sendChat }: { sendChat: (chat: string) => void }) => {
   const [currentChat, setCurrentChat] = useState<string>("");
   return (
@@ -184,6 +182,7 @@ export const LiveChat = () => {
   const [infoId, setInfoId] = useState("");
 
   useEffect(() => {
+    const serverUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
     const url = serverUrl;
     const newSocket = io(url);
     setSocket(newSocket);
