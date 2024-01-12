@@ -28,3 +28,11 @@ export const getChat = async (payload: {
     }).sort({ createdAt: 1 });
   }
 };
+
+export const deleteChat = async (payload: { id: string }) => {
+  if (payload.id) {
+    return await Chat.findByIdAndDelete({
+      _id: payload.id,
+    });
+  }
+};

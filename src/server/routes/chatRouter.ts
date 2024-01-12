@@ -13,4 +13,15 @@ router.post("/", async (req: Request, res: Response) => {
   }
 });
 
+router.post("/delete", async (req: Request, res: Response) => {
+  const chatList = await chatServices.deleteChat(req.body);
+  if (chatList) {
+    return res
+      .status(200)
+      .json(getSuccessResponse(200, "Chat deleted", chatList));
+  } else {
+    res.status(401).json(getErrorResponse(401, "Chat Not Found"));
+  }
+});
+
 export const chatRouter = router;

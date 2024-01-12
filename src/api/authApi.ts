@@ -70,6 +70,16 @@ export const getChats = (payload: {
   });
 };
 
+export const deleteChat = (id: string) => {
+  return axios<ServerResponse<{}>>({
+    url: "/api/chats/delete",
+    method: "POST",
+    data: {
+      id,
+    },
+  });
+};
+
 export const resetPassword = (username: string, passwd: string) => {
   return axios<ServerResponse<{}>>({
     url: "/api/auth/resetPassword",

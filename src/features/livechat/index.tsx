@@ -22,7 +22,7 @@ import { COLORS } from "@utils/theme";
 import { useEffect, useRef, useState } from "react";
 import { TextBox } from "@components/Common";
 import { MdSend, MdGroup, MdCancel, MdAdd } from "react-icons/md";
-import { ChatInfo } from "@server/types/chat";
+import { ChatInfo, DBChat } from "@server/types/chat";
 import { clearUserData, getInitials } from "@utils/helper";
 import useLoggedInUser from "@utils/useLoggedInUser";
 import dayjs from "dayjs";
@@ -35,6 +35,7 @@ import io, { Socket } from "socket.io-client";
 import CustomAlert from "./CustomAlert";
 import { Button as MuiButton, Divider } from "@mui/material";
 import Router from "next/router";
+import useLongPress from "@utils/useLongPress";
 dayjs.extend(RelativeTime);
 
 const ChatTypingArea = ({ sendChat }: { sendChat: (chat: string) => void }) => {
@@ -95,18 +96,55 @@ const ChatTypingArea = ({ sendChat }: { sendChat: (chat: string) => void }) => {
   );
 };
 
-const ChatView = ({ chatList }: { chatList: ChatInfo[] }) => {
+const ChatView = ({
+  chatList,
+  getChatsList,
+  payload,
+}: {
+  chatList: ChatInfo[];
+  getChatsList: (payload: {
+    selectedUser: string;
+    loggedInUser: string;
+    isGroup: boolean;
+  }) => void;
+  payload: {
+    selectedUser: string;
+    loggedInUser: string;
+    isGroup: boolean;
+  };
+}) => {
   const userData = useLoggedInUser();
   const userChatViewRef = useRef<HTMLDivElement>(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [deleteId, setDeleteId] = useState("");
 
+  const onLongPress = (e: MouseEvent) => {
+    const chatId = (e.target as HTMLDivElement)?.id;
+    setDeleteId(chatId);
+  };
+
+  const onClick = () => {
+    console.log("click is triggered");
+  };
+
+  const defaultOptions = {
+    shouldPreventDefault: true,
+    delay: 500,
+  };
+  const longPressEvent = useLongPress(onLongPress, onClick, defaultOptions);
   useEffect(() => {
     (userChatViewRef.current as HTMLDivElement).scrollTo({
       behavior: "smooth", //test
       top: userChatViewRef.current?.scrollHeight,
     });
   }, [chatList]);
+
+  const chatDelete = async () => {
+    setDeleteId("");
+    await authApi.deleteChat(deleteId);
+    getChatsList(payload);
+  };
   return (
     <Box
       style={{
@@ -135,6 +173,8 @@ const ChatView = ({ chatList }: { chatList: ChatInfo[] }) => {
                   ismobile={isMobile}
                   color={COLORS.BLACK}
                   style={{ padding: isMobile ? "0px 8px" : "10px" }}
+                  id={(chat as DBChat)._id}
+                  {...(longPressEvent as any)}
                 >
                   {chat.message}
                 </MeBubble>
@@ -182,6 +222,8 @@ const ChatView = ({ chatList }: { chatList: ChatInfo[] }) => {
                   ismobile={isMobile}
                   color={COLORS.WHITE}
                   style={{ padding: isMobile ? "0px 8px" : "10px" }}
+                  id={(chat as DBChat)._id}
+                  {...(longPressEvent as any)}
                 >
                   {chat.message}
                 </OthersBubble>
@@ -195,6 +237,31 @@ const ChatView = ({ chatList }: { chatList: ChatInfo[] }) => {
           );
         }
       })}
+
+      <Modal
+        open={deleteId !== ""}
+        onClose={() => setDeleteId("")}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={modalStyle(isMobile)}>
+          <Typography>Are you sure want to delete?</Typography>
+          <Box paddingTop={"10px"} display={"flex"} justifyContent={"end"}>
+            <Box paddingRight={"5px"}>
+              <Button
+                type="secondary"
+                style={{ height: "30px" }}
+                onClick={() => setDeleteId("")}
+              >
+                <Typography>No</Typography>
+              </Button>
+            </Box>
+            <Button style={{ height: "30px" }} onClick={() => chatDelete()}>
+              <Typography>Yes</Typography>
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   );
 };
@@ -327,7 +394,7 @@ export const LiveChat = () => {
       ? list.data.filter((user) => !user.isAdmin)
       : list.data.filter((user) => user.isAdmin);
 
-    const selectedUserPhone = filteredList[filteredList.length - 1].phone;
+    const selectedUserPhone = filteredList[0].phone;
     setSelectedUser(selectedUserPhone);
   };
   useEffect(() => {
@@ -542,7 +609,15 @@ export const LiveChat = () => {
           width={"100%"}
           flexDirection={"column"}
         >
-          <ChatView chatList={chatList} />
+          <ChatView
+            chatList={chatList}
+            getChatsList={getChatsList}
+            payload={{
+              selectedUser,
+              loggedInUser: userData?.phone as string,
+              isGroup: selectedUser === "group_message",
+            }}
+          />
           <ChatTypingArea sendChat={sendChat} />
         </Box>
       </Box>
